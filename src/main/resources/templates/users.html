@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Users</title></head>
+<body>
+
+<h2>All Users</h2>
+
+<table border="1">
+    <tr>
+        <th>ID</th><th>First</th><th>Last</th><th>Email</th><th>Actions</th>
+    </tr>
+    <tr th:each="u : ${users}">
+        <td th:text="${u.id}"></td>
+        <td th:text="${u.firstName}"></td>
+        <td th:text="${u.lastName}"></td>
+        <td th:text="${u.email}"></td>
+        <td>
+            <a th:href="@{/users/{id}/edit(id=${u.id})}">Edit</a>
+            <form th:action="@{/users/{id}/delete(id=${u.id})}" method="post" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<h2>Add User</h2>
+<form th:action="@{/users}" th:object="${user}" method="post">
+
+    <input th:field="*{firstName}"
+           placeholder="First name"
+           required
+           pattern="[A-Za-z]+"
+           title="Letters only (A-Z)" />
+    <div th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
+
+    <input th:field="*{lastName}"
+           placeholder="Last name"
+           required
+           pattern="[A-Za-z]+"
+           title="Letters only (A-Z)" />
+    <div th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
+
+    <input th:field="*{email}"
+           placeholder="Email"
+           required
+           type="email" />
+    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+    <button type="submit">Add</button>
+</form>
+
+
+</body>
+</html>
