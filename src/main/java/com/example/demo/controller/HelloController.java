@@ -13,7 +13,7 @@ public class HelloController {
     public String home(Model model) {
         model.addAttribute("messages", List.of(
                 "Congratulations!",
-                "Spring MVC + Thymeleaf is working on Spring Boot."
+                "You are in User page"
         ));
         return "index";
     }

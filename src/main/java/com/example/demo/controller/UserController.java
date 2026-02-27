@@ -1,16 +1,16 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.User;
+import com.example.demo.service.UserService;
 
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import com.example.demo.service.UserService;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/admin/users")
 public class UserController {
 
     private final UserService userService;
@@ -29,6 +29,7 @@ public class UserController {
     @PostMapping
     public String create(@Valid @ModelAttribute("user") User user,
                          BindingResult result,
+                         @RequestParam("rawPassword") String rawPassword,
                          Model model) {
 
         if (result.hasErrors()) {
@@ -36,8 +37,9 @@ public class UserController {
             return "users";
         }
 
-        userService.save(user);
-        return "redirect:/users";
+        userService.createUser(user, rawPassword);
+
+        return "redirect:/admin/users";
     }
 
     @GetMapping("/{id}/edit")
@@ -53,7 +55,7 @@ public class UserController {
                          Model model) {
 
         if (result.hasErrors()) {
-            formUser.setId(id);
+            formUser.setId(id); // works ONLY if setId() is fixed
             return "edit";
         }
 
@@ -65,13 +67,12 @@ public class UserController {
 
         userService.update(existing);
 
-        return "redirect:/users";
+        return "redirect:/admin/users";
     }
-
 
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id) {
         userService.delete(id);
-        return "redirect:/users";
+        return "redirect:/admin/users";
     }
 }
