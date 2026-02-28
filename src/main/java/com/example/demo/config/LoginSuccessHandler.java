@@ -29,7 +29,7 @@ public class LoginSuccessHandler
         if (roles.contains("ROLE_ADMIN")) {
             response.sendRedirect("/admin/users");
         } else {
-            response.sendRedirect("/");
+            response.sendRedirect("/user");
         }
     }
 }
