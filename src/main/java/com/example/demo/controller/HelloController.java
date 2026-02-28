@@ -15,6 +15,6 @@ public class HelloController {
                 "Congratulations!",
                 "You are in User page"
         ));
-        return "index";
+        return "user";
     }
 }

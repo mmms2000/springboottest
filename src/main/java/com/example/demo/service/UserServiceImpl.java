@@ -7,6 +7,7 @@ import com.example.demo.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,42 +26,40 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // ===== your existing methods =====
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
-    }
+    public List<User> findAll() { return userRepository.findAll(); }
 
     @Override
-    public User findById(Long id) {
-        return userRepository.findById(id).orElse(null);
-    }
+    public User findById(Long id) { return userRepository.findById(id).orElse(null); }
 
     @Override
-    public void save(User user) {
-        userRepository.save(user);
-    }
+    public void save(User user) { userRepository.save(user); }
 
     @Override
-    public void update(User user) {
-        userRepository.save(user);
-    }
+    public void update(User user) { userRepository.save(user); }
 
     @Override
-    public void delete(Long id) {
-        userRepository.deleteById(id);
-    }
+    public void delete(Long id) { userRepository.deleteById(id); }
 
-    // ===== NEW: create user with password + default ROLE_USER =====
-    public void createUser(User user, String rawPassword) {
+    @Override
+    public void createUser(User user, String rawPassword, List<String> roles) {
 
-        Role roleUser = roleRepository.findByName("ROLE_USER");
-        if (roleUser == null) {
-            roleUser = roleRepository.save(new Role("ROLE_USER"));
+        if (roles == null || roles.isEmpty()) {
+            roles = List.of("ROLE_USER");
+        }
+
+        Set<Role> roleEntities = new HashSet<>();
+
+        for (String roleName : roles) {
+            Role role = roleRepository.findByName(roleName);
+            if (role == null) {
+                role = roleRepository.save(new Role(roleName));
+            }
+            roleEntities.add(role);
         }
 
         user.setPassword(passwordEncoder.encode(rawPassword));
-        user.setRoles(Set.of(roleUser));
+        user.setRoles(roleEntities);
 
         userRepository.save(user);
     }

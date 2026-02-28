@@ -3,7 +3,6 @@ package com.example.demo.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -31,11 +30,9 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    // ✅ NEW: password for login
     @Column(nullable = false)
     private String password;
 
-    // ✅ NEW: roles (user can have multiple roles)
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
@@ -46,17 +43,9 @@ public class User implements UserDetails {
 
     public User() {}
 
-    public User(String firstName, String lastName, String email, String password, Set<Role> roles) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.roles = roles;
-    }
-
     public Long getId() { return id; }
 
-    public void setId(Long id) { this.id = id; } // ✅ FIXED (yours was empty)
+    public void setId(Long id) { this.id = id; }
 
     public String getFirstName() { return firstName; }
 
@@ -76,16 +65,13 @@ public class User implements UserDetails {
 
     public void setRoles(Set<Role> roles) { this.roles = roles; }
 
-    // =========================
-    // UserDetails implementation
-    // =========================
-
+    // UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
     }
 
-    // Use email as username for Spring Security
+    // Use email as username
     @Override
     public String getUsername() {
         return email;
@@ -96,15 +82,8 @@ public class User implements UserDetails {
         return password;
     }
 
-    @Override
-    public boolean isAccountNonExpired() { return true; }
-
-    @Override
-    public boolean isAccountNonLocked() { return true; }
-
-    @Override
-    public boolean isCredentialsNonExpired() { return true; }
-
-    @Override
-    public boolean isEnabled() { return true; }
+    @Override public boolean isAccountNonExpired() { return true; }
+    @Override public boolean isAccountNonLocked() { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
+    @Override public boolean isEnabled() { return true; }
 }

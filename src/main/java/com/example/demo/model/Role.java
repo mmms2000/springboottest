@@ -1,9 +1,7 @@
 package com.example.demo.model;
 
-import org.springframework.security.core.GrantedAuthority;
-
 import jakarta.persistence.*;
-import java.util.Objects;
+import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "roles")
@@ -13,7 +11,8 @@ public class Role implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // ROLE_ADMIN or ROLE_USER
+    @Column(nullable = false, unique = true)
+    private String name; // ROLE_ADMIN, ROLE_USER
 
     public Role() {}
 
@@ -25,8 +24,6 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return name;
     }
-
-    // getters & setters
 
     public Long getId() { return id; }
 

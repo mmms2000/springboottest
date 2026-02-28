@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>User</title></head>
+<body>
+
+<h2>User Home</h2>
+
+<p><b>First name:</b> <span th:text="${user.firstName}"></span></p>
+<p><b>Last name:</b> <span th:text="${user.lastName}"></span></p>
+<p><b>Email:</b> <span th:text="${user.email}"></span></p>
+
+<div th:insert="~{fragments/logout :: logout}"></div>
+
+</body>
+</html>

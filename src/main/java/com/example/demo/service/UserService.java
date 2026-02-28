@@ -12,5 +12,5 @@ public interface UserService {
     void update(User user);
     void delete(Long id);
 
-    void createUser(User user, String rawPassword);
+    void createUser(User user, String rawPassword, java.util.List<String> roles);
 }
