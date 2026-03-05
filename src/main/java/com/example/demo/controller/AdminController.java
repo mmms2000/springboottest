@@ -20,63 +20,94 @@ public class AdminController {
         this.userService = userService;
     }
 
-    // LIST PAGE: GET /admin/users
+    // ===============================
+    // LIST PAGE
+    // ===============================
+
     @GetMapping
     public String list(Model model) {
         model.addAttribute("users", userService.findAll());
         model.addAttribute("user", new User());
-        return "admin"; // templates/admin.html
+        return "admin";
     }
 
-    // CREATE: POST /admin/users
+    // ===============================
+    // CREATE USER
+    // ===============================
+
     @PostMapping
     public String create(@Valid @ModelAttribute("user") User user,
                          BindingResult result,
                          @RequestParam("rawPassword") String rawPassword,
-                         @RequestParam(value = "roles", required = false) List<String> roles,
+                         @RequestParam(value = "roleName", required = false) List<String> roleName,
                          Model model) {
+
+        // duplicate email check
+        if (userService.emailExists(user.getEmail())) {
+            result.rejectValue("email", "duplicate", "Email already exists.");
+        }
 
         if (result.hasErrors()) {
             model.addAttribute("users", userService.findAll());
             return "admin";
         }
 
-        userService.createUser(user, rawPassword, roles);
+        userService.createUser(user, rawPassword, roleName);
+
         return "redirect:/admin/users";
     }
 
-    // EDIT FORM: GET /admin/users/{id}/edit
+    // ===============================
+    // EDIT USER PAGE
+    // ===============================
+
     @GetMapping("/{id}/edit")
     public String edit(@PathVariable Long id, Model model) {
-        model.addAttribute("user", userService.findById(id));
+
+        User user = userService.findById(id);
+
+        model.addAttribute("user", user);
+        model.addAttribute("selectedRoles", userService.getRoleNames(user));
+
         return "edit";
     }
 
-    // UPDATE: POST /admin/users/{id}
+    // ===============================
+    // UPDATE USER
+    // ===============================
+
     @PostMapping("/{id}")
     public String update(@PathVariable Long id,
                          @Valid @ModelAttribute("user") User formUser,
                          BindingResult result,
+                         @RequestParam(value = "roleName", required = false) List<String> roleName,
+                         @RequestParam(value = "newPassword", required = false) String newPassword,
                          Model model) {
 
+        // duplicate email check (exclude current user)
+        if (userService.emailExistsForOtherUser(formUser.getEmail(), id)) {
+            result.rejectValue("email", "duplicate", "Email already exists.");
+        }
+
         if (result.hasErrors()) {
-            formUser.setId(id);
+            model.addAttribute("selectedRoles", roleName);
             return "edit";
         }
 
-        User existing = userService.findById(id);
-        existing.setFirstName(formUser.getFirstName());
-        existing.setLastName(formUser.getLastName());
-        existing.setEmail(formUser.getEmail());
+        userService.updateUserAdmin(id, formUser, roleName, newPassword);
 
-        userService.update(existing);
         return "redirect:/admin/users";
     }
 
-    // DELETE: POST /admin/users/{id}/delete
+    // ===============================
+    // DELETE USER
+    // ===============================
+
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id) {
+
         userService.delete(id);
+
         return "redirect:/admin/users";
     }
 }
