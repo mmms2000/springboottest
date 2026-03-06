@@ -23,4 +23,6 @@ public interface UserService {
     void updateUserAdmin(Long id, @Valid User formUser, List<String> roles, String newPassword);
 
     @Nullable Object getRoleNames(User user);
+
+    User findByEmail(String email);
 }

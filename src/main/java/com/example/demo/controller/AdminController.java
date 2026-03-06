@@ -58,21 +58,6 @@ public class AdminController {
     }
 
     // ===============================
-    // EDIT USER PAGE
-    // ===============================
-
-    @GetMapping("/{id}/edit")
-    public String edit(@PathVariable Long id, Model model) {
-
-        User user = userService.findById(id);
-
-        model.addAttribute("user", user);
-        model.addAttribute("selectedRoles", userService.getRoleNames(user));
-
-        return "edit";
-    }
-
-    // ===============================
     // UPDATE USER
     // ===============================
 
@@ -90,15 +75,16 @@ public class AdminController {
         }
 
         if (result.hasErrors()) {
-            model.addAttribute("selectedRoles", roleName);
-            return "edit";
+            // IMPORTANT: admin page needs these to render
+            model.addAttribute("users", userService.findAll());
+            model.addAttribute("user", new User()); // for Add User tab
+            model.addAttribute("editUserId", id);   // to re-open modal
+            return "admin"; //
         }
 
         userService.updateUserAdmin(id, formUser, roleName, newPassword);
-
         return "redirect:/admin/users";
     }
-
     // ===============================
     // DELETE USER
     // ===============================

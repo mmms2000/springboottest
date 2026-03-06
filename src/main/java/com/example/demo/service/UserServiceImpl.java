@@ -113,44 +113,49 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found: " + email));
+    }
+
     // =========================
     // ADMIN UPDATE USER
     // =========================
 
     @Override
     @Transactional
-    public void updateUserAdmin(Long id, User formUser, List<String> roles, String newPassword) {
+    public void updateUserAdmin(Long id, User formUser, List<String> roleName, String newPassword) {
 
-        User existing = userRepository.findById(id).orElseThrow();
+        User user = userRepository.findById(id).orElseThrow();
 
-        existing.setFirstName(formUser.getFirstName());
-        existing.setLastName(formUser.getLastName());
-        existing.setEmail(formUser.getEmail());
+        // update basic fields
+        user.setFirstName(formUser.getFirstName());
+        user.setLastName(formUser.getLastName());
+        user.setAge(formUser.getAge());
+        user.setEmail(formUser.getEmail());
 
-        // roles
-        if (roles == null || roles.isEmpty()) {
-            roles = List.of("ROLE_USER");
-        }
-
-        Set<Role> roleEntities = new HashSet<>();
-
-        for (String roleName : roles) {
-            Role role = roleRepository.findByName(roleName);
-
-            if (role == null) {
-                role = roleRepository.save(new Role(roleName));
-            }
-
-            roleEntities.add(role);
-        }
-
-        existing.setRoles(roleEntities);
-
-        // optional password change
+        // update password if provided
         if (newPassword != null && !newPassword.isBlank()) {
-            existing.setPassword(passwordEncoder.encode(newPassword));
+            user.setPassword(passwordEncoder.encode(newPassword));
         }
 
-        userRepository.save(existing);
+        // update roles
+        Set<Role> roles = new HashSet<>();
+
+        if (roleName != null) {
+            for (String role : roleName) {
+                Role r = roleRepository.findByName(role);
+
+                if (r == null) {
+                    throw new RuntimeException("Role not found");
+                }
+                roles.add(r);
+            }
+        }
+
+        user.setRoles(roles);
+
+        userRepository.save(user);
     }
 }

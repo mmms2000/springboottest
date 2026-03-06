@@ -1,25 +1,48 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Login</title></head>
+<head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background: #ffffff; }
+        .login-wrap { min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding-top: 120px; }
+        .login-card { width: 420px; }
+    </style>
+</head>
 <body>
 
-<h2>Login</h2>
+<div class="login-wrap">
+    <div class="login-card">
+        <h2 class="text-center mb-4">Please sign in</h2>
 
-<form th:action="@{/login}" method="post">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <form th:action="@{/login}" method="post" class="card card-body border-0">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-    <div>
-        <label>Email</label>
-        <input type="text" name="username" />
+            <div class="mb-2">
+                <input class="form-control" type="text" name="username" placeholder="Email address" required>
+            </div>
+
+            <div class="mb-3">
+                <input class="form-control" type="password" name="password" placeholder="Password" required>
+            </div>
+
+            <button class="btn btn-primary w-100" type="submit">Sign in</button>
+
+            <div class="mt-3">
+                <div th:if="${param.error}" class="alert alert-danger py-2 mb-0">
+                    Invalid email or password.
+                </div>
+                <div th:if="${param.logout}" class="alert alert-success py-2 mb-0">
+                    You have been logged out.
+                </div>
+            </div>
+        </form>
     </div>
-
-    <div>
-        <label>Password</label>
-        <input type="password" name="password" />
-    </div>
-
-    <button type="submit">Login</button>
-</form>
+</div>
 
 </body>
 </html>
