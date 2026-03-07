@@ -40,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) {
+        if (user.getAge() == null || user.getAge() < 1 || user.getAge() > 120) {
+            throw new IllegalArgumentException("Age must be between 1 and 120");
+        }
         userRepository.save(user);
     }
 

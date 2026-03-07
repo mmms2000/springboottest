@@ -1,9 +1,7 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -35,6 +33,9 @@ public class User implements UserDetails {
     private String email;
 
     @Column(name = "age")
+    @NotNull(message = "Age is required")
+    @Min(value = 1, message = "Age must be at least 1")
+    @Max(value = 120, message = "Age must be no more than 120")
     private Integer age;
 
     @Column(nullable = false)
