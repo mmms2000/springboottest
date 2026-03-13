@@ -32,9 +32,11 @@ public class WebSecurityConfig {
 
         http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
+
                 )
                 .formLogin(login -> login
                         .loginPage("/login")
@@ -44,7 +46,8 @@ public class WebSecurityConfig {
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .permitAll()
-                );
+                )
+                .csrf(csrf -> csrf.disable());
 
         return http.build();
     }
